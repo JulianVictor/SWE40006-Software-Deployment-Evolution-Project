@@ -19,15 +19,16 @@ stage('Install System Packages') {
 }
 
 
-        stage('Install Dependencies') {
-          steps {
-            sh '''
-              python3 -m venv venv
-              . venv/bin/activate
-              pip install -r requirements.txt
-            '''
-          }
-        }
+stage('Install Dependencies') {
+    steps {
+        sh '''
+            sudo apt-get update
+            sudo apt-get install -y libgl1 libglib2.0-0
+            pip install -r requirements.txt
+        '''
+    }
+}
+
 
 
         stage('Run App') {

@@ -9,6 +9,15 @@ pipeline {
                     url: 'https://github.com/JulianVictor/SWE40006-Software-Deployment-Evolution-Project.git'
             }
         }
+stage('Install System Packages') {
+    steps {
+        sh '''
+            sudo apt-get update
+            sudo apt-get install -y libgl1 libglib2.0-0
+        '''
+    }
+}
+
 
         stage('Install Dependencies') {
           steps {

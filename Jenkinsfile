@@ -4,7 +4,8 @@ pipeline {
     stages {
         stage('Checkout') {
     steps {
-        git credentialsId: 'github-pat', url: 'https://github.com/yourusername/devops-demo-pipeline.git'
+        git credentialsId: 'github-pat', url: 'https://github.com/JulianVictor/SWE40006-Software-Deployment-Evolution-Project.git'
+
     }
 }
         stage('Install Dependencies') {

@@ -3,14 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Cat Facts</title>
+  <title>🐱 Cat Facts App</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="container">
-    <h1>🐱 Cat Facts</h1>
-    <p id="fact">Loading...</p>
-    <button onclick="getCatFact()">Get Another Fact</button>
+  <div class="app-container">
+    <h1>🐾 Cat Facts</h1>
+    <div class="fact-box" id="fact-box">Loading cat fact...</div>
+    <div class="buttons">
+      <button onclick="getCatFact()">Get Another Fact</button>
+      <button onclick="saveFavorite()">❤️ Save to Favorites</button>
+    </div>
+    
+    <h2>Saved Favorites</h2>
+    <ul id="favorites-list"></ul>
+    <button class="clear-btn" onclick="clearFavorites()">🗑️ Clear All</button>
   </div>
   <script src="script.js"></script>
 </body>

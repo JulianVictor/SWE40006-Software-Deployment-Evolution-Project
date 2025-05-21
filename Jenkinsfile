@@ -16,7 +16,10 @@ pipeline {
         }
         stage('Run App') {
             steps {
-                sh 'nohup python3 app.py &'
+                sh '''
+    nohup python3 app.py > app.log 2>&1 &
+    echo $! > app.pid
+'''
             }
         }
     }

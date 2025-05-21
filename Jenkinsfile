@@ -11,10 +11,14 @@ pipeline {
         }
 
         stage('Install System Dependencies') {
-            steps {
-                sh 'sudo apt update && sudo apt install -y python3-venv'
-            }
+          steps {
+            sh '''
+              apt update
+              apt install python3 python3-pip -y
+            '''
+          }
         }
+
 
         stage('Install Python Dependencies') {
             steps {

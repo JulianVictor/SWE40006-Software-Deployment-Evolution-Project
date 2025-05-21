@@ -3,10 +3,10 @@ pipeline {
 
     stages {
         stage('Checkout') {
-            steps {
-                git 'https://github.com/yourusername/devops-demo-pipeline.git'
-            }
-        }
+    steps {
+        git credentialsId: 'github-pat', url: 'https://github.com/yourusername/devops-demo-pipeline.git'
+    }
+}
         stage('Install Dependencies') {
             steps {
                 sh 'pip install -r requirements.txt'

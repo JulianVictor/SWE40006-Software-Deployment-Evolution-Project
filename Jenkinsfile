@@ -1,35 +1,39 @@
 pipeline {
-  agent any
+    agent any
 
-  stages {
-    stage('Clone') {
-      steps {
-        git 'https://github.com/JulianVictor/SWE40006-Software-Deployment-Evolution-Project.git'
-      }
-    }
+    stages {
+        stage('Clone') {
+            steps {
+                git 'https://github.com/JulianVictor/SWE40006-Software-Deployment-Evolution-Project.git'
+            }
+        }
 
-    stage('Build Docker') {
-      steps {
-        sh 'docker build -t julianjee/cat-facts-app .'
-      }
-    }
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t cat-facts-app .'
+            }
+        }
 
-    stage('Run Container') {
-      steps {
-        sh 'docker run -d -p 5000:5000 --name cat-facts julianjee/cat-facts-app'
-      }
-    }
+        stage('Push to DockerHub') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+                    sh 'docker tag cat-facts-app julianjee/cat-facts-app:latest'
+                    sh 'docker push julianjee/cat-facts-app:latest'
+                }
+            }
+        }
 
-    stage('Selenium Test') {
-      steps {
-        sh 'pytest tests/selenium_test.py'
-      }
-    }
-  }
+        stage('Deploy on EC2') {
+            steps {
+                sh 'ssh -o StrictHostKeyChecking=no -i /path/to/deploy.pem ubuntu@54.165.71.97 "docker pull julianjee/cat-facts-app:latest && docker stop cat || true && docker rm cat || true && docker run -d -p 5000:5000 --name cat julianjee/cat-facts-app:latest"'
+            }
+        }
 
-  post {
-    always {
-      sh 'docker rm -f cat-facts || true'
+        stage('UI Tests') {
+            steps {
+                sh 'pytest tests/test_ui.py'
+            }
+        }
     }
-  }
 }

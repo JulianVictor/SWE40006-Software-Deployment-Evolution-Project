@@ -2,32 +2,36 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = "julianjee/cat-facts-app"
-        EC2_HOST = "54.165.71.97"
-        EC2_USER = "ec2-user"
+        DOCKER_IMAGE = 'julianjee/cat-facts-app'
+        DOCKER_TAG = "${env.BUILD_NUMBER}"
     }
 
     stages {
-        stage('Clone Repo') {
+        stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/JulianVictor/SWE40006-Software-Deployment-Evolution-Project.git'
+                checkout scm
             }
         }
 
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh 'docker build -t $DOCKER_IMAGE .'
+                    sh 'export DOCKER_BUILDKIT=1'
+                    sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
                 }
             }
         }
 
         stage('Push to Docker Hub') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    script {
-                        sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
-                        sh 'docker push $DOCKER_IMAGE'
+                script {
+                    withCredentials([usernamePassword(
+                        credentialsId: 'dockerhub-creds',
+                        passwordVariable: 'DOCKER_PASS',
+                        usernameVariable: 'DOCKER_USER'
+                    )]) {
+                        sh "echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin"
+                        sh "docker push ${DOCKER_IMAGE}:${DOCKER_TAG}"
                     }
                 }
             }
@@ -35,17 +39,25 @@ pipeline {
 
         stage('Deploy to EC2') {
             steps {
-                sshagent(['ec2-key']) {
-                    sh '''
-                    ssh -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST << EOF
-                      docker pull $DOCKER_IMAGE
-                      docker stop cat-facts-container || true
-                      docker rm cat-facts-container || true
-                      docker run -d --name cat-facts-container -p 80:5000 $DOCKER_IMAGE
-                    EOF
-                    '''
+                script {
+                    sshagent(['ec2-key']) {
+                        sh """
+                            ssh -o StrictHostKeyChecking=no ubuntu@your-ec2-ip << EOF
+                            docker pull ${DOCKER_IMAGE}:${DOCKER_TAG}
+                            docker stop cat-facts-app || true
+                            docker rm cat-facts-app || true
+                            docker run -d --name cat-facts-app -p 5000:5000 ${DOCKER_IMAGE}:${DOCKER_TAG}
+                            EOF
+                        """
+                    }
                 }
             }
+        }
+    }
+
+    post {
+        always {
+            cleanWs()
         }
     }
 }

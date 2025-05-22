@@ -35,7 +35,7 @@ def index():
       background-color: #fef6e4;
       padding: 20px;
       margin: 20px 0;
-      border-left: 5px solid #f98fb0;
+      border-left: 5px solid #fcba03;
       font-size: 18px;
       animation: fadeIn 0.5s;
     }
@@ -46,7 +46,7 @@ def index():
       padding: 10px 15px;
       margin: 5px;
       font-size: 16px;
-      background-color: #f98fb0;
+      background-color: #fcba03;
       color: white;
       border: none;
       border-radius: 8px;
@@ -62,7 +62,7 @@ def index():
       overflow-y: auto;
     }
     .clear-btn {
-      background-color: #ff9999;
+      background-color: #fcba03;
     }
     .clear-btn:hover {
       background-color: #e97777;

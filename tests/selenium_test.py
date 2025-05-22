@@ -9,7 +9,7 @@ options.add_argument('--disable-dev-shm-usage')
 
 def test_cat_facts_ui():
     driver = webdriver.Chrome(options=options)
-    driver.get("http://54.91.115.194:5000")
+    driver.get("http://54.83.88.113:5000")
 
     assert "Cat Facts" in driver.title
 

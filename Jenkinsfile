@@ -22,6 +22,15 @@ pipeline {
             }
         }
 
+        stage('Build') {
+            steps {
+                script {
+                    sh 'npm install'
+                    sh 'npm run build'
+                }
+            }
+        }
+
         stage('Deploy') {
             when {
                 branch 'main'

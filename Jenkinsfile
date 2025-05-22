@@ -42,7 +42,7 @@ pipeline {
                 script {
                     sshagent(['ec2-key']) {
                         sh """
-                            ssh -o StrictHostKeyChecking=no ubuntu@98.81.128.232 << EOF
+                            ssh -o StrictHostKeyChecking=no ubuntu@3.87.77.121 << EOF
                             docker pull ${DOCKER_IMAGE}:${DOCKER_TAG}
                             docker stop cat-facts-app || true
                             docker rm cat-facts-app || true

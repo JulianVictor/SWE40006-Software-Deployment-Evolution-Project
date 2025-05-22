@@ -26,7 +26,7 @@ pipeline {
 
         stage('Deploy on EC2') {
             steps {
-                sh 'ssh -o StrictHostKeyChecking=no -i /path/to/deploy2.pem ubuntu@54.91.115.194 "docker pull julianjee/cat-facts-app:latest && docker stop cat || true && docker rm cat || true && docker run -d -p 5000:5000 --name cat julianjee/cat-facts-app:latest"'
+                sh 'ssh -o StrictHostKeyChecking=no -i /path/to/deploy2.pem ubuntu@54.83.88.113 "docker pull julianjee/cat-facts-app:latest && docker stop cat || true && docker rm cat || true && docker run -d -p 5000:5000 --name cat julianjee/cat-facts-app:latest"'
             }
         }
 

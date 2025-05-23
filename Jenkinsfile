@@ -2,14 +2,6 @@ pipeline {
     agent any
 
     stages {
-        stage('Clone') {
-            steps {
-                git branch: 'main',
-                    url: 'https://github.com/JulianVictor/SWE40006-Software-Deployment-Evolution-Project.git'
-            }
-        }
-
-
         stage('Build Docker Image') {
             steps {
                 sh 'docker build -t cat-facts-app .'

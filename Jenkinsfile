@@ -26,14 +26,26 @@ pipeline {
 
         stage('Deploy on EC2') {
             steps {
-                sh 'ssh -o StrictHostKeyChecking=no ubuntu@54.83.88.113 "docker pull julianjee/cat-facts-app:latest && docker stop cat || true && docker rm cat || true && docker run -d -p 5000:5000 --name cat julianjee/cat-facts-app:latest"'
+                sshagent (credentials: ['ec2-key']) {
+                    sh 'ssh -o StrictHostKeyChecking=no ubuntu@54.83.88.113 "docker pull julianjee/cat-facts-app:latest && docker stop cat || true && docker rm cat || true && docker run -d -p 5000:5000 --name cat julianjee/cat-facts-app:latest"'
+                }
             }
         }
 
         stage('Run Selenium Tests') {
-      steps {
-        sh ' python3 tests/selenium_test.py'  // Python script to run Selenium
-      }
+            steps {
+                // Python script to run Selenium
+                sh 'python3 tests/selenium_test.py'
+            }
+        }
     }
-  }
+
+    post {
+        success {
+            echo '✅ All stages completed successfully!'
+        }
+        failure {
+            echo '❌ One or more stages failed. Check the console output.'
+        }
+    }
 }

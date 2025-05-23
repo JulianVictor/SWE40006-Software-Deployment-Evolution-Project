@@ -27,7 +27,7 @@ pipeline {
         stage('Deploy on EC2') {
             steps {
                 sshagent (credentials: ['ec2-key']) {
-                    sh 'ssh -o StrictHostKeyChecking=no ubuntu@54.83.88.113 "docker pull julianjee/cat-facts-app:latest && docker stop cat || true && docker rm cat || true && docker run -d -p 5000:5000 --name cat julianjee/cat-facts-app:latest"'
+                    sh 'ssh -o StrictHostKeyChecking=no ubuntu@54.226.89.1 "docker pull julianjee/cat-facts-app:latest && docker stop cat || true && docker rm cat || true && docker run -d -p 5000:5000 --name cat julianjee/cat-facts-app:latest"'
                 }
             }
         }

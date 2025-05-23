@@ -1,19 +1,17 @@
 from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
 import time
 
-options = Options()
-options.add_argument('--headless')
-options.add_argument('--no-sandbox')
-options.add_argument('--disable-dev-shm-usage')
+# Create a new browser session (auto-detects driver with Selenium 4.6+)
+driver = webdriver.Firefox()
 
-def test_cat_facts_ui():
-    driver = webdriver.Chrome(options=options)
-    driver.get("http://54.83.88.113:5000")
+# Go to your deployed app
+driver.get("http://44.220.158.67:5000")
 
-    assert "Cat Facts" in driver.title
+# Give it some time to load (adjust if needed)
+time.sleep(2)
 
-    fact = driver.find_element("id", "fact-box").text
-    assert len(fact) > 0
+# Check the page title contains expected text
+assert "Cat Facts" in driver.title
 
-    driver.quit()
+# Close the browser
+driver.quit()

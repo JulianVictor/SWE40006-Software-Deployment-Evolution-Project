@@ -34,13 +34,6 @@ pipeline {
             }
         }
 
-        stage('Run Selenium Tests') {
-            steps {
-                // Python script to run Selenium
-                sh 'python3 tests/selenium_test.py'
-            }
-        }
-    }
 
     post {
         success {

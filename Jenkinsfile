@@ -6,16 +6,16 @@ pipeline {
   }
 
   stages {
-      stage('Check Docker Access') {
-        steps {
-            sh '''
-                echo "🔍 Checking Docker access..."
-                if ! docker ps > /dev/null 2>&1; then
-                    echo "❌ Jenkins cannot access Docker. Ensure the user is in the docker group."
-                    exit 1
-                fi
-            '''
-        }
+    stage('Check Docker Access') {
+      steps {
+        sh '''
+          echo "🔍 Checking Docker access..."
+          if ! docker ps > /dev/null 2>&1; then
+            echo "❌ Jenkins cannot access Docker. Ensure the user is in the docker group."
+            exit 1
+          fi
+        '''
+      }
     }
 
     stage('Build Docker Image') {
@@ -36,21 +36,22 @@ pipeline {
       }
     }
 
-  stage('Deploy to EC2') {
-    steps {
+    stage('Deploy to EC2') {
+      steps {
         sshagent(['ec2-user']) {
-            sh """
-                ssh -o StrictHostKeyChecking=no ec2-user@54.175.157.181 << 'EOF'
-                set -e
-                docker pull julianjee/cat-facts-app
-                docker stop cat-facts-app || true
-                docker rm cat-facts-app || true
-                docker run -d -p 80:5000 --name cat-facts-app julianjee/cat-facts-app
-                EOF
-            """
+          sh """
+            ssh -o StrictHostKeyChecking=no ec2-user@54.175.157.181 << 'EOF'
+            set -e
+            docker pull julianjee/cat-facts-app
+            docker stop cat-facts-app || true
+            docker rm cat-facts-app || true
+            docker run -d -p 80:5000 --name cat-facts-app julianjee/cat-facts-app
+            EOF
+          """
         }
+      }
     }
-}
+  }
 
   post {
     success {

@@ -22,7 +22,8 @@ pipeline {
       steps {
         withCredentials([string(credentialsId: 'dockerhub-creds', variable: 'DOCKER_PASSWORD')]) {
           sh '''
-            echo $DOCKER_PASSWORD | docker login -u julianjee --password-stdin
+            set -e
+            echo "$DOCKER_PASSWORD" | docker login -u julianjee --password-stdin
             docker push $DOCKER_IMAGE
           '''
         }
@@ -34,9 +35,10 @@ pipeline {
         sshagent (credentials: ['ec2-key']) {
           sh '''
             ssh -o StrictHostKeyChecking=no ec2-user@54.165.71.97 "
-              docker pull $DOCKER_IMAGE &&
-              docker stop cat-facts-app || true &&
-              docker rm cat-facts-app || true &&
+              set -e
+              docker pull $DOCKER_IMAGE
+              docker stop cat-facts-app || true
+              docker rm cat-facts-app || true
               docker run -d -p 80:5000 --name cat-facts-app $DOCKER_IMAGE
             "
           '''

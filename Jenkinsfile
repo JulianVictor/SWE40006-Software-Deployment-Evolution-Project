@@ -45,20 +45,20 @@ pipeline {
 
         stage('Deploy to EC2') {
             steps {
-                sshagent(['ec2-user']) {
+                sshagent(['ec2-deploy-key']) {  // Match the ID you set in Jenkins
                     sh '''
-                    echo 🚀 Deploying to EC2...
-                    ssh -o StrictHostKeyChecking=no ubuntu@18.234.87.16 << 'EOF'
-                      echo 🐳 Pulling latest image...
-                      docker pull $DOCKER_IMAGE
-
-                      echo 🧹 Cleaning up old container (if exists)...
-                      docker stop cat-facts-app || true
-                      docker rm cat-facts-app || true
-
-                      echo 🚀 Starting new container...
-                      docker run -d -p 80:5000 --name cat-facts-app $DOCKER_IMAGE
-                    EOF
+                        echo 🚀 Deploying to EC2...
+                        ssh -o StrictHostKeyChecking=no ubuntu@18.234.87.16 << 'EOF'
+                        echo 🐳 Pulling latest image...
+                        docker pull $DOCKER_IMAGE
+        
+                        echo 🧹 Cleaning up old container (if exists)...
+                        docker stop cat-facts-app || true
+                        docker rm cat-facts-app || true
+        
+                        echo 🚀 Starting new container...
+                        docker run -d -p 80:5000 --name cat-facts-app $DOCKER_IMAGE
+                        EOF
                     '''
                 }
             }

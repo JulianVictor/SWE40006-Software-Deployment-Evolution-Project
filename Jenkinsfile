@@ -47,21 +47,21 @@ pipeline {
             steps {
                 sshagent(['ec2-deploy-key']) {
                     sh '''
-                        echo 🚀 Deploying to EC2...
-                        ssh -o StrictHostKeyChecking=no ubuntu@18.234.87.16 /bin/bash << "REMOTE_EOF"
-                        # Pass the Docker image name as a variable
-                        DOCKER_IMAGE='julianjee/cat-facts-app'
-                        
-                        echo 🐳 Pulling latest image...
-                        docker pull "$DOCKER_IMAGE"
-        
-                        echo "🧹 Cleaning up old container (if exists)..."
-                        docker stop cat-facts-app || true
-                        docker rm cat-facts-app || true
-        
-                        echo 🚀 Starting new container...
-                        docker run -d -p 80:5000 --name cat-facts-app "$DOCKER_IMAGE"
-                        REMOTE_EOF
+                    echo 🚀 Deploying to EC2...
+
+                    ssh -o StrictHostKeyChecking=no ubuntu@18.234.87.16 << 'EOF'
+                    DOCKER_IMAGE="julianjee/cat-facts-app"
+
+                    echo 🐳 Pulling latest image...
+                    docker pull "$DOCKER_IMAGE"
+
+                    echo 🧹 Cleaning up old container (if exists)...
+                    docker stop cat-facts-app || true
+                    docker rm cat-facts-app || true
+
+                    echo 🚀 Starting new container...
+                    docker run -d -p 80:5000 --name cat-facts-app "$DOCKER_IMAGE"
+                    EOF
                     '''
                 }
             }
@@ -69,11 +69,11 @@ pipeline {
     }
 
     post {
-        success {
-            echo '✅ Deployment successful!'
-        }
         failure {
             echo '❌ Deployment failed.'
+        }
+        success {
+            echo '✅ Deployment succeeded.'
         }
     }
 }

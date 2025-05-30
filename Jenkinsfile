@@ -40,7 +40,7 @@ pipeline {
       steps {
         sshagent(['ec2-key']) {
           sh """
-            ssh -o StrictHostKeyChecking=no ec2-user@54.175.157.181 << 'EOF'
+            ssh -o StrictHostKeyChecking=no ubuntu@18.234.87.16 << 'EOF'
             set -e
             docker pull julianjee/cat-facts-app
             docker stop cat-facts-app || true

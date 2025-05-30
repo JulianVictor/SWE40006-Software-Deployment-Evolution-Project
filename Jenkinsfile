@@ -46,23 +46,23 @@ pipeline {
         stage('Deploy to EC2') {
             steps {
                 sshagent(['ec2-deploy-key']) {
-                    sh """
+                    sh '''
                         echo 🚀 Deploying to EC2...
-                        ssh -o StrictHostKeyChecking=no ubuntu@18.234.87.16 /bin/bash << 'EOF'
-                        # Escape the variable to evaluate it locally (Jenkins side)
-                        DOCKER_IMAGE='$DOCKER_IMAGE'
+                        ssh -o StrictHostKeyChecking=no ubuntu@18.234.87.16 /bin/bash << "REMOTE_EOF"
+                        # Pass the Docker image name as a variable
+                        DOCKER_IMAGE='julianjee/cat-facts-app'
                         
                         echo 🐳 Pulling latest image...
-                        docker pull "\$DOCKER_IMAGE"
+                        docker pull "$DOCKER_IMAGE"
         
                         echo "🧹 Cleaning up old container (if exists)..."
                         docker stop cat-facts-app || true
                         docker rm cat-facts-app || true
         
                         echo 🚀 Starting new container...
-                        docker run -d -p 80:5000 --name cat-facts-app "\$DOCKER_IMAGE"
-                        EOF
-                    """
+                        docker run -d -p 80:5000 --name cat-facts-app "$DOCKER_IMAGE"
+                        REMOTE_EOF
+                    '''
                 }
             }
         }

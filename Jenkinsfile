@@ -1,64 +1,76 @@
 pipeline {
-  agent any
+    agent any
 
-  environment {
-    DOCKER_IMAGE = 'julianjee/cat-facts-app'
-  }
-
-  stages {
-    stage('Check Docker Access') {
-      steps {
-        sh '''
-          echo "🔍 Checking Docker access..."
-          if ! docker ps > /dev/null 2>&1; then
-            echo "❌ Jenkins cannot access Docker. Ensure the user is in the docker group."
-            exit 1
-          fi
-        '''
-      }
+    environment {
+        DOCKER_IMAGE = 'julianjee/cat-facts-app'
     }
 
-    stage('Build Docker Image') {
-      steps {
-        sh 'docker build -t $DOCKER_IMAGE .'
-      }
-    }
-
-    stage('Push to Docker Hub') {
-      steps {
-        withCredentials([string(credentialsId: 'dockerhub-creds', variable: 'DOCKER_PASSWORD')]) {
-          sh '''
-            set -e
-            echo "$DOCKER_PASSWORD" | docker login -u julianjee --password-stdin
-            docker push $DOCKER_IMAGE
-          '''
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
         }
-      }
-    }
 
-    stage('Deploy to EC2') {
-      steps {
-        sshagent(['ec2-key']) {
-          sh """
-            ssh -o StrictHostKeyChecking=no ubuntu@18.234.87.16 << 'EOF'
-            set -e
-            docker pull julianjee/cat-facts-app
-            docker stop cat-facts-app || true
-            docker rm cat-facts-app || true
-            docker run -d -p 80:5000 --name cat-facts-app julianjee/cat-facts-app
-            EOF
-          """
+        stage('Check Docker Access') {
+            steps {
+                sh '''
+                echo 🔍 Checking Docker access...
+                docker ps
+                '''
+            }
         }
-      }
-    }
-  }
 
-  post {
-    success {
-      echo '✅ Deployment completed successfully.'
+        stage('Build Docker Image') {
+            steps {
+                sh '''
+                echo 🛠️ Building Docker image...
+                docker build -t $DOCKER_IMAGE .
+                '''
+            }
+        }
+
+        stage('Push to Docker Hub') {
+            steps {
+                withCredentials([string(credentialsId: 'docker-hub-password', variable: 'DOCKER_PASSWORD')]) {
+                    sh '''
+                    echo 🔐 Logging into Docker Hub...
+                    echo $DOCKER_PASSWORD | docker login -u julianjee --password-stdin
+                    echo 📦 Pushing image to Docker Hub...
+                    docker push $DOCKER_IMAGE
+                    '''
+                }
+            }
+        }
+
+        stage('Deploy to EC2') {
+            steps {
+                sshagent(['ec2-user']) {
+                    sh '''
+                    echo 🚀 Deploying to EC2...
+                    ssh -o StrictHostKeyChecking=no ubuntu@18.234.87.16 << 'EOF'
+                      echo 🐳 Pulling latest image...
+                      docker pull $DOCKER_IMAGE
+
+                      echo 🧹 Cleaning up old container (if exists)...
+                      docker stop cat-facts-app || true
+                      docker rm cat-facts-app || true
+
+                      echo 🚀 Starting new container...
+                      docker run -d -p 80:5000 --name cat-facts-app $DOCKER_IMAGE
+                    EOF
+                    '''
+                }
+            }
+        }
     }
-    failure {
-      echo '❌ Deployment failed.'
+
+    post {
+        success {
+            echo '✅ Deployment successful!'
+        }
+        failure {
+            echo '❌ Deployment failed.'
+        }
     }
-  }
 }

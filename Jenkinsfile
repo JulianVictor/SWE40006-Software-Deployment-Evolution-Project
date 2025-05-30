@@ -6,12 +6,6 @@ pipeline {
   }
 
   stages {
-    stage('Clone Repo') {
-      steps {
-        git 'https://github.com/JulianVictor/SWE40006-Software-Deployment-Evolution-Project.git'
-      }
-    }
-
     stage('Build Docker Image') {
       steps {
         sh 'docker build -t $DOCKER_IMAGE .'

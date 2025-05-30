@@ -36,22 +36,21 @@ pipeline {
       }
     }
 
-    stage('Deploy to EC2') {
-      steps {
-        sshagent (credentials: ['ec2-key']) {
-          sh '''
-            ssh -o StrictHostKeyChecking=no ec2-user@54.175.157.181"
-              set -e
-              docker pull $DOCKER_IMAGE
-              docker stop cat-facts-app || true
-              docker rm cat-facts-app || true
-              docker run -d -p 80:5000 --name cat-facts-app $DOCKER_IMAGE
-            "
-          '''
+  stage('Deploy to EC2') {
+    steps {
+        sshagent(['ec2-user']) {
+            sh """
+                ssh -o StrictHostKeyChecking=no ec2-user@54.175.157.181 << 'EOF'
+                set -e
+                docker pull julianjee/cat-facts-app
+                docker stop cat-facts-app || true
+                docker rm cat-facts-app || true
+                docker run -d -p 80:5000 --name cat-facts-app julianjee/cat-facts-app
+                EOF
+            """
         }
-      }
     }
-  }
+}
 
   post {
     success {

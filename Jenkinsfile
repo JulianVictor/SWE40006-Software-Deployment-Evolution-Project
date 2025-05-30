@@ -38,7 +38,7 @@ pipeline {
 
     stage('Deploy to EC2') {
       steps {
-        sshagent(['ec2-user']) {
+        sshagent(['ec2-key']) {
           sh """
             ssh -o StrictHostKeyChecking=no ec2-user@54.175.157.181 << 'EOF'
             set -e

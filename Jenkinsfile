@@ -6,6 +6,18 @@ pipeline {
   }
 
   stages {
+      stage('Check Docker Access') {
+        steps {
+            sh '''
+                echo "🔍 Checking Docker access..."
+                if ! docker ps > /dev/null 2>&1; then
+                    echo "❌ Jenkins cannot access Docker. Ensure the user is in the docker group."
+                    exit 1
+                fi
+            '''
+        }
+    }
+
     stage('Build Docker Image') {
       steps {
         sh 'docker build -t $DOCKER_IMAGE .'

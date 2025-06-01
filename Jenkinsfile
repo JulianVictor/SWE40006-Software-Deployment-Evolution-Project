@@ -27,23 +27,21 @@ pipeline {
                     echo "🧪 Setting up Python virtual environment..."
                     python3 -m venv selenium-venv
         
-                    echo "🐍 Activating virtual environment..."
-                    . selenium-venv/bin/activate
-        
                     echo "⬆️ Upgrading pip..."
-                    pip install --upgrade pip
+                    ./selenium-venv/bin/pip install --upgrade pip
         
                     echo "📦 Installing test dependencies..."
-                    pip install selenium webdriver-manager
+                    ./selenium-venv/bin/pip install selenium webdriver-manager
         
                     echo "📋 Confirming packages installed..."
-                    pip list
+                    ./selenium-venv/bin/pip list
         
                     echo "🚀 Running test script..."
-                    python test_selenium.py || (echo "❌ Test script failed!" && exit 1)
+                    ./selenium-venv/bin/python test_selenium.py || (echo "❌ Test script failed!" && exit 1)
                 '''
             }
         }
+
 
 
         stage('Build Docker Image') {

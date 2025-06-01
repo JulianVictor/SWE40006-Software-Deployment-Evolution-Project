@@ -21,26 +21,30 @@ pipeline {
             }
         }
 
-        stage('Run Selenium Tests') {
+        stage('Run Playwright Tests') {
             steps {
                 sh '''
-                    echo "🧪 Setting up Python virtual environment..."
-                    python3 -m venv selenium-venv
+                    echo "🧪 Setting up Python virtual environment for Playwright..."
+                    python3 -m venv playwright-venv
+        
+                    echo "🐍 Activating virtual environment..."
+                    . playwright-venv/bin/activate
         
                     echo "⬆️ Upgrading pip..."
-                    ./selenium-venv/bin/pip install --upgrade pip
+                    pip install --upgrade pip
         
-                    echo "📦 Installing test dependencies..."
-                    ./selenium-venv/bin/pip install selenium webdriver-manager
+                    echo "📦 Installing Playwright..."
+                    pip install playwright
         
-                    echo "📋 Confirming packages installed..."
-                    ./selenium-venv/bin/pip list
+                    echo "⬇️ Installing browser binaries..."
+                    playwright install --with-deps
         
-                    echo "🚀 Running test script..."
-                    ./selenium-venv/bin/python test_selenium.py || (echo "❌ Test script failed!" && exit 1)
+                    echo "🚀 Running Playwright test..."
+                    python test_playwright.py || (echo "❌ Playwright test failed!" && exit 1)
                 '''
             }
         }
+
 
 
 

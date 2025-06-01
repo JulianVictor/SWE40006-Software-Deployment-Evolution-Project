@@ -23,10 +23,9 @@ pipeline {
 
         stage('Run Selenium Tests') {
             steps {
-                sh '''
+                sh '''#!/bin/bash
                 echo 🧪 Running Selenium tests...
-
-                # Activate Python venv (if exists) or install inline
+        
                 if [ -d "selenium-venv" ]; then
                     source selenium-venv/bin/activate
                 else
@@ -35,12 +34,12 @@ pipeline {
                     pip install --upgrade pip
                     pip install selenium
                 fi
-
-                # Run the test (make sure test_selenium.py exists in repo)
+        
                 python test_selenium.py
                 '''
             }
         }
+
 
         stage('Build Docker Image') {
             steps {

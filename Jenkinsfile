@@ -21,6 +21,27 @@ pipeline {
             }
         }
 
+        stage('Run Selenium Tests') {
+            steps {
+                sh '''
+                echo 🧪 Running Selenium tests...
+
+                # Activate Python venv (if exists) or install inline
+                if [ -d "selenium-venv" ]; then
+                    source selenium-venv/bin/activate
+                else
+                    python3 -m venv selenium-venv
+                    source selenium-venv/bin/activate
+                    pip install --upgrade pip
+                    pip install selenium
+                fi
+
+                # Run the test (make sure test_selenium.py exists in repo)
+                python test_selenium.py
+                '''
+            }
+        }
+
         stage('Build Docker Image') {
             steps {
                 sh '''
@@ -47,16 +68,16 @@ pipeline {
             steps {
                 sshagent(['ec2-deploy-key']) {
                     sh '''
-                        echo 🚀 Deploying to EC2...
-                        ssh -o StrictHostKeyChecking=no ubuntu@18.234.87.16 '
-                            echo "🐳 Pulling latest image..."
-                            docker pull julianjee/cat-facts-app
-                            echo "🧹 Cleaning up old container (if exists)..."
-                            docker stop cat-facts-app || true
-                            docker rm cat-facts-app || true
-                            echo "🐱 Starting new container..."
-                            docker run -d -p 80:5000 --name cat-facts-app julianjee/cat-facts-app
-                        '
+                    echo 🚀 Deploying to EC2...
+                    ssh -o StrictHostKeyChecking=no ubuntu@18.234.87.16 '
+                        echo "🐳 Pulling latest image..."
+                        docker pull julianjee/cat-facts-app
+                        echo "🧹 Cleaning up old container (if exists)..."
+                        docker stop cat-facts-app || true
+                        docker rm cat-facts-app || true
+                        echo "🐱 Starting new container..."
+                        docker run -d -p 80:5000 --name cat-facts-app julianjee/cat-facts-app
+                    '
                     '''
                 }
             }

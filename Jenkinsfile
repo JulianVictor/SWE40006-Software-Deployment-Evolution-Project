@@ -24,11 +24,23 @@ pipeline {
         stage('Run Selenium Tests') {
             steps {
                 sh '''
-                    echo "🧪 Running Selenium tests..."
+                    echo "🧪 Setting up Python virtual environment..."
                     python3 -m venv selenium-venv
+        
+                    echo "🐍 Activating virtual environment..."
                     . selenium-venv/bin/activate
+        
+                    echo "⬆️ Upgrading pip..."
+                    pip install --upgrade pip
+        
+                    echo "📦 Installing test dependencies..."
                     pip install selenium webdriver-manager
-                    python test_selenium.py
+        
+                    echo "📋 Confirming packages installed..."
+                    pip list
+        
+                    echo "🚀 Running test script..."
+                    python test_selenium.py || (echo "❌ Test script failed!" && exit 1)
                 '''
             }
         }

@@ -23,19 +23,12 @@ pipeline {
 
         stage('Run Selenium Tests') {
             steps {
-                sh '''#!/bin/bash
-                echo 🧪 Running Selenium tests...
-        
-                if [ -d "selenium-venv" ]; then
-                    source selenium-venv/bin/activate
-                else
+                sh '''
+                    echo "🧪 Running Selenium tests..."
                     python3 -m venv selenium-venv
-                    source selenium-venv/bin/activate
-                    pip install --upgrade pip
-                    pip install selenium
-                fi
-        
-                python test_selenium.py
+                    . selenium-venv/bin/activate
+                    pip install selenium webdriver-manager
+                    python test_selenium.py
                 '''
             }
         }

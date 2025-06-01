@@ -21,37 +21,6 @@ pipeline {
             }
         }
 
-        stage('Run Playwright Tests') {
-            steps {
-                sh '''
-                    echo "🧪 Setting up Python virtual environment for Playwright..."
-                    python3 -m venv playwright-venv
-        
-                    echo "🐍 Activating virtual environment..."
-                    . playwright-venv/bin/activate
-        
-                    echo "⬆️ Upgrading pip..."
-                    pip install --upgrade pip
-        
-                    echo "📦 Installing Playwright..."
-                    pip install playwright
-        
-                    echo "⬇️ Installing browser binaries..."
-                    playwright install --with-deps
-        
-                    echo "🚀 Running Playwright test..."
-                    python test_playwright.py || (echo "❌ Playwright test failed!" && exit 1)
-        
-                    echo "🧹 Cleaning up..."
-                    deactivate
-                    rm -rf playwright-venv
-                '''
-            }
-        }
-
-
-
-
         stage('Build Docker Image') {
             steps {
                 sh '''

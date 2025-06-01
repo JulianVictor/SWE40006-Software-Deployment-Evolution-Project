@@ -41,6 +41,10 @@ pipeline {
         
                     echo "🚀 Running Playwright test..."
                     python test_playwright.py || (echo "❌ Playwright test failed!" && exit 1)
+        
+                    echo "🧹 Cleaning up..."
+                    deactivate
+                    rm -rf playwright-venv
                 '''
             }
         }
